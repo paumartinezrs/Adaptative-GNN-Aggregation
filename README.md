@@ -5,54 +5,53 @@
 This project benchmarks three aggregation strategies for Graph Convolutional
 Networks — *edge-index scatter*, *sparse matrix multiplication*, and *dense
 matrix multiplication* — and trains a lightweight Random Forest classifier to
-predict the fastest strategy per partition at inference time, yielding speedups
-over any single fixed strategy.
+predict the fastest strategy per partition at inference time, yielding speedups over single fixed strategies.
 
 ---
 
 ## Workflow Overview
 
 ```
-                         ┌──────────────────────────┐
-                         │  Step 0 (external)        │
-                         │  Generate synthetic       │
-                         │  graphs (e.g. GraphGalaxy)│
-                         └────────────┬─────────────┘
-                                      │ edgelist files
-                                      ▼
-┌─────────────────────┐   ┌─────────────────────────┐
-│  Step 1              │   │  Step 2                  │
-│  partition_graph.py  │   │  benchmark_training_     │
-│  ─────────────────── │   │  data.py                 │
-│  Partition a real    │   │  ─────────────────────── │
-│  graph with METIS &  │   │  Quick-benchmark each    │
-│  KaHIP               │   │  synthetic graph →       │
-│  → edgelists +       │   │  CSV with metrics +      │
-│    metrics CSV       │   │  best strategy (training │
-└────────┬────────────┘   │  data for classifier)    │
-         │                 └────────────┬────────────┘
-         │                              │
-         ▼                              │
-┌─────────────────────┐                 │
+           ┌─────────────────────────────┐
+           │  Step 0 (external)          │
+           │  Generate synthetic         │
+           │  graphs (e.g. GraphGalaxy)  │
+           └──────────────┬──────────────┘
+                          │ edgelist files
+                          ▼
+┌──────────────────────┐   ┌───────────────────────────┐
+│  Step 1              │   │  Step 2                   │
+│  partition_graph.py  │   │  benchmark_training_      │
+│  ──────────────────  │   │  data.py                  │
+│  Partition a real    │   │  ───────────────────────  │
+│  graph with METIS &  │   │  Quick-benchmark each     │
+│  KaHIP               │   │  synthetic graph →        │
+│  → edgelists +       │   │  CSV with metrics +       │
+│    metrics CSV       │   │  best strategy (training  │
+└──────────┬───────────┘   │  data for classifier)     │
+           │               └─────────────┬─────────────┘
+           │                             │
+           ▼                             │
+┌──────────────────────┐                 │
 │  Step 3              │                 │
 │  benchmark_          │                 │
 │  partitions.py       │                 │
-│  ─────────────────── │                 │
+│  ──────────────────  │                 │
 │  Multi-epoch GNN     │                 │
 │  benchmark using     │                 │
 │  real features       │                 │
 │  → results CSV       │                 │
-└────────┬────────────┘                 │
-         │                              │
-         ▼                              ▼
-┌────────────────────────────────────────────────────┐
-│  Step 4: notebooks/analyze.ipynb                    │
-│  ──────────────────────────────────────────────     │
-│  • Train Random Forest on synthetic benchmark data  │
+└──────────┬───────────┘                 │
+           │                             │
+           ▼                             ▼
+┌──────────────────────────────────────────────────────┐
+│  Step 4: notebooks/analyze.ipynb                     │
+│  ──────────────────────────────────────────────────  │
+│  • Train Random Forest on synthetic benchmark data   │
 │  • Predict best strategy per real partition          │
-│  • Compute speedups, confusion matrix, feature      │
-│    importance, heterogeneity analysis               │
-└────────────────────────────────────────────────────┘
+│  • Compute speedups, confusion matrix, feature       │
+│    importance, heterogeneity analysis                │
+└──────────────────────────────────────────────────────┘
 ```
 
 ---
