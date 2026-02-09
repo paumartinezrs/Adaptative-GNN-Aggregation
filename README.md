@@ -207,4 +207,4 @@ All three produce the same mathematical result
 
 ## License
 
-This code accompanies an academic thesis. Contact the author for licensing.
+This code accompanies an academic thesis. More information: https://www.linkedin.com/in/pau-martinez-i-rios/ (see “Projects”)
